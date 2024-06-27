@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Display First Array</title>
+</head>
+<body>
+  <div id="jsonDataDisplay"></div>
+
+  <!-- Include the getjsondata.js script -->
+  <script src="getJSONData.js"></script>
+
+  <script>
+	const displayJsonData = async () => {
+	  try {
+		const jsonDataString = await getJSONData();
+		const jsonDataDisplay = document.getElementById('jsonDataDisplay');
+	
+		// Log the fetched JSON data string for debugging
+		console.log('Fetched JSON data string:', jsonDataString);
+	
+		// Parse the JSON string into an object
+		//jsonDataString from getJSONData.js is a string
+		const jsonData = JSON.parse(jsonDataString);
+	
+		// Log the parsed JSON data for debugging
+		console.log('Parsed JSON data:', jsonData);
+	
+		// Clear previous content
+		jsonDataDisplay.innerHTML = '';
+	
+		// Ensure jsonData is an array and has at least one element
+		if (Array.isArray(jsonData) && jsonData.length > 0) {
+		  // Extract the first array (array[0])
+		  const firstArray = jsonData[0];
+	
+		  // Display the first array
+		  //The <pre> element in HTML preserves both whitespace and line breaks. This is particularly useful when displaying JSON data, which often contains indentation and newlines for readability.
+		  const pre = document.createElement('pre');
+		  //null means no filtering or transformation is applied during the conversion.
+		  //2 means the resulting JSON string will be pretty-printed with an indentation of 2 spaces, making it more readable when displayed in the HTML element pre.
+		  pre.innerHTML = JSON.stringify(firstArray, null,2);
+		  jsonDataDisplay.appendChild(pre);
+	
+		  // Extract the email from the first array (array[0])
+		  const emailFromArray0 = firstArray.Email;
+	
+		  // Display the email from the first array
+		  const emailFromArray = document.createElement('div');
+		  emailFromArray.innerHTML = `Email from Array[0]: ${emailFromArray0}`;
+		  jsonDataDisplay.appendChild(emailFromArray);
+		} else {
+		  jsonDataDisplay.innerHTML = 'No data available or data is not an array.';
+		}
+	  } catch (error) {
+		console.error('Error:', error.message);
+	  }
+	};
+
+	// Call the function to display JSON data
+	displayJsonData();
+  </script>
+</body>
+</html>
