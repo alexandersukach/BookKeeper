@@ -6,6 +6,10 @@
     <title>Document</title>
 </head>
 <body>
-    This is our dummy site.
+    <form id="api-search" action='https://www.googleapis.com/books/v1/volumes?q=' method="GET">
+            <span>Search</span><br>
+            <input id="title" type="text" placeholder="Book Title" name="search-metric">
+            <input type="submit" value="Search" name="Search">
+    </form>
 </body>
 </html>
