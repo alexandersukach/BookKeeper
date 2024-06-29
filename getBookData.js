@@ -11,5 +11,6 @@ document.getElementById('bookForm').addEventListener('submit', async function(ev
 async function fetchBookData(params) {
     let query = '';
     if (params.title) query += `intitle:${encodeURIComponent(params.title)} `;
-
+    if (params.author) query += `inauthor:${encodeURIComponent(params.title)}`;
+    if (params.publisher) query += `inpublisher: $(encode)`
 }
