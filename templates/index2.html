@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+</head>
+<body>
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Book Title">
+        <button onclick="searchBooks()" class="search-button">Search Books</button>
+      </div>
+<script>
+    function searchBooks() {
+        const apiKey = 'AIzaSyDEEzOr0fGC0CycWr0oZ_LkzYL62ZPzu9o';
+        const searchInput = document.getElementById('searchInput').value;
+        const apiURL = `https://www.googleapis.com/books/v1/volumes?q=${searchInput}&key=${apiKey}`;
+        
+		if (searchInput.trim() !== '') {
+            try {
+            fetch(apiURL)
+                .then((response) => response.json())
+                .then((json) => console.log(json));
+            // const response = await fetch()
+            //const data = await response.json();
+            //displayRecipes(data.results);
+            } catch (error) {
+            console.error(error);
+            }
+		} else {
+		  alert('Please enter a search keyword.');
+		}
+	  }
+      </script>
+</body>
+</html>

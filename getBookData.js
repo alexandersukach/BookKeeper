@@ -13,4 +13,4 @@ async function fetchBookData(params) {
     if (params.title) query += `intitle:${encodeURIComponent(params.title)} `;
     if (params.author) query += `inauthor:${encodeURIComponent(params.title)}`;
     if (params.publisher) query += `inpublisher: $(encode)`
-}
+};
