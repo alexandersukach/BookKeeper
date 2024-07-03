@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Keeper - Home</title>
+</head>
+<body>
+    <h1>Welcome to Book Keeper</h1>
+    <div id="user-info"></div>
+    <button onclick="logout()">Logout</button>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = sessionStorage.getItem('username');
+            if (username) {
+                document.getElementById('user-info').textContent = `Hello, ${username}!`;
+            } else {
+                window.location.href = 'index.html';  // Redirect back to login if no session found
+            }
+        });
+
+        function logout() {
+            sessionStorage.removeItem('username');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
