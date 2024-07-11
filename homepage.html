@@ -35,7 +35,7 @@
     <nav class="navbar navbar-expand-sm fixed-top mask-custom">
 
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">BookKeeper</a>
+            <a class="navbar-brand" href='index.html'>BookKeeper</a>
         </div>
 
         <!-- Links -->
@@ -49,7 +49,7 @@
             <button class="nav-link" >Recommended</button>
             </li>
             <li class="nav-item">
-            <button class="nav-link" onclick="signOut()">Sign Out</button>
+            <button type="button" onclick="signOut()" class="nav-link">Sign Out</button>
             </li>
         </ul>
         </div>
@@ -65,10 +65,10 @@
           <li><button class="dropdown-item" onclick=searchSelect(this)>Publisher</button></li>
         </ul>
         <input type="text" class="form-control" id="searchInput" aria-label="Text input with dropdown button">
-        <button class="btn btn-light" type="button"><i class="bi bi-search"></i></button>
+        <button class="btn btn-light" type="button" onclick="searchBooks()"><i class="bi bi-search"></i></button>
     </div>
      
 
 </body>
-<script src="BookKeeper.js"></script>
+<script src="script.js"></script>
 </html>

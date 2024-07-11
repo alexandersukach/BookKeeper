@@ -122,14 +122,28 @@ async function searchBooks() {
 }
 
 function displayBooks(books) {
-    const resultDiv = document.getElementById('book-results');
+    const resultDiv = document.createElement('div');
+    resultDiv.setAttribute('id', 'book-results');
+    const existingResultDiv = document.getElementById('book-results');
+    if (existingResultDiv) {
+        existingResultDiv.parentNode.replaceChild(resultDiv, existingResultDiv);
+    } else {
+        document.body.appendChild(resultDiv);
+    }
+
     resultDiv.innerHTML = ''; // Clear previous results
     books.forEach(book => {
         const bookItem = document.createElement('div');
         bookItem.textContent = book.volumeInfo.title;
-        bookItem.onclick = () => addBookTobooklist(book);
+        bookItem.classList.add('list-group-item', 'list-group-item-action');
+        bookItem.onclick = () => addBookToBooklist(book);
         resultDiv.appendChild(bookItem);
     });
+}
+
+function searchSelect(element) {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.placeholder = `Search by ${element.textContent}`;
 }
 
 async function addBookTobooklist(book) {
