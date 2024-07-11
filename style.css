@@ -93,3 +93,9 @@ html {
     top: 20vh;
     left: 30vw;
 }
+
+#results-list {
+    position: fixed;
+    top: 25vh;
+    left: 30vw;
+}
