@@ -122,13 +122,16 @@ async function searchBooks() {
 }
 
 function displayBooks(books) {
-    const resultDiv = document.getElementById('book-results');
-    resultDiv.innerHTML = ''; // Clear previous results
+    var resultsList = document.getElementById("results-list");
+    var bookResult = document.createElement("li");
+    //resultDiv.innerHTML = ''; // Clear previous results
     books.forEach(book => {
-        const bookItem = document.createElement('div');
-        bookItem.textContent = book.volumeInfo.title;
-        bookItem.onclick = () => addBookTobooklist(book);
-        resultDiv.appendChild(bookItem);
+        var title = book.volumeInfo.title;
+        var desc = book.volumeInfo.description;
+        var img = book.volumeInfo.imageLinks.smallThumbnail;
+        resultsList.innerHTML += `<li class="list-group-item">${title}</li>`;
+        //bookItem.onclick = () => addBookTobooklist(book);
+        //resultDiv.appendChild(bookItem);
     });
 }
 
