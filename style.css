@@ -6,6 +6,10 @@ html {
     background-size: cover;
   }
 
+html body{
+    overflow-y: auto;
+}
+
 .mask-custom {
     backdrop-filter: blur(5px);
     background-color: rgba(46, 37, 83, 0.267);

@@ -122,17 +122,47 @@ async function searchBooks() {
 }
 
 function displayBooks(books) {
-    var resultsList = document.getElementById("results-list");
-    var bookResult = document.createElement("li");
-    //resultDiv.innerHTML = ''; // Clear previous results
+    const resultDiv = document.createElement('div');
+    resultDiv.setAttribute('id', 'book-results');
+    const existingResultDiv = document.getElementById('book-results');
+    if (existingResultDiv) {
+        existingResultDiv.parentNode.replaceChild(resultDiv, existingResultDiv);
+    } else {
+        document.body.appendChild(resultDiv);
+    }
+
+    resultDiv.innerHTML = ''; // Clear previous results
     books.forEach(book => {
-        var title = book.volumeInfo.title;
-        var desc = book.volumeInfo.description;
-        var img = book.volumeInfo.imageLinks.smallThumbnail;
-        resultsList.innerHTML += `<li class="list-group-item">${title}</li>`;
-        //bookItem.onclick = () => addBookTobooklist(book);
-        //resultDiv.appendChild(bookItem);
+        const bookItem = document.createElement('div');
+        
+        const bookCover = book.volumeInfo.imageLinks.thumbnail;
+        //bookItem.textContent = book.volumeInfo.title;
+        bookItem.innerHTML = `<img src="${bookCover}"></img>`;
+        bookItem.classList.add('list-group-item', 'list-group-item-action');
+        // bookItem.onclick = () => addBookToBooklist(book);
+        // CSS Styling
+        bookItem.style.width = "5vw";
+        bookItem.style.height = "5vw";
+        bookItem.style.borderRadius = "5px";
+        bookItem.style.backgroundColor = "grey";
+        resultDiv.appendChild(bookItem);
+
+        // CSS Styling
+        resultDiv.style.width = "45vw";
+        resultDiv.style.height = "50vh";
+        resultDiv.style.display = "flex";
+        resultDiv.style.flexFlow = "row wrap";
+        resultDiv.style.alignContent = "space-between";
+        resultDiv.style.gap = "20px 20px 20px";
+        resultDiv.style.position = "fixed";
+        resultDiv.style.left = "30vw";
+        resultDiv.style.top = "30vh";
     });
+}
+
+function searchSelect(element) {
+    const searchInput = document.getElementById('searchInput');
+    searchInput.placeholder = `Search by ${element.textContent}`;
 }
 
 async function addBookTobooklist(book) {
