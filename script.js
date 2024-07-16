@@ -102,16 +102,32 @@ async function login() {
 }
 
 // FETCHING BOOK FUNCTIONS
+let searchParameter = 'intitle';
+
+function searchSelect(element, parameter) {
+    searchParameter = parameter;
+    const searchInput = document.getElementById('searchInput');
+    searchInput.placeholder = `Search by ${element.textContent}`;
+}
+
 async function searchBooks() {
     const apiKey = 'AIzaSyDEEzOr0fGC0CycWr0oZ_LkzYL62ZPzu9o';
     const searchInput = document.getElementById('searchInput').value;
-    const apiURL = `https://www.googleapis.com/books/v1/volumes?q=${searchInput}&key=${apiKey}`;
 
     if (searchInput.trim() !== '') {
+        const query = `${searchParameter}:${searchInput.trim()}`;
+        const apiURL = `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${apiKey}`;
+        
         try {
             const response = await fetch(apiURL);
             const data = await response.json();
-            displayBooks(data.items);
+            const filteredBooks = data.items.filter(book => {
+                if (searchParameter === 'inauthor') {
+                    return book.volumeInfo.authors && book.volumeInfo.authors.some(author => author.toLowerCase().includes(searchInput.toLowerCase()));
+                }
+                return true;
+            });
+            displayBooks(filteredBooks);
         } catch (error) {
             console.error('Failed to fetch books:', error);
         }
@@ -121,71 +137,92 @@ async function searchBooks() {
 }
 
 function displayBooks(books) {
-    const resultDiv = document.createElement('div');
-    resultDiv.setAttribute('id', 'book-results');
-    const existingResultDiv = document.getElementById('book-results');
-    if (existingResultDiv) {
-        existingResultDiv.parentNode.replaceChild(resultDiv, existingResultDiv);
-    } else {
-        document.body.appendChild(resultDiv);
+    const resultDiv = document.getElementById('search-results');
+    resultDiv.innerHTML = ''; // Clear previous results
+
+    if (!books || books.length === 0) {
+        resultDiv.textContent = 'No books found.';
+        return;
     }
 
-    resultDiv.innerHTML = ''; // Clear previous results
+    const bookGrid = document.createElement('div');
+    bookGrid.classList.add('row', 'row-cols-1', 'row-cols-md-3', 'g-4');
+
     books.forEach(book => {
-        const bookInfo = book.volumeInfo;
+        const bookCard = document.createElement('div');
+        bookCard.classList.add('col');
 
-        const bookItem = document.createElement('div');
-        bookItem.classList.add('list-group-item', 'list-group-item-action');
+        const card = document.createElement('div');
+        card.classList.add('card', 'h-100');
 
-        // Displaying the title
-        const title = document.createElement('h3');
-        title.textContent = bookInfo.title || 'No Title Available';
-        bookItem.appendChild(title);
+        const coverImage = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : 'placeholder.jpg';
+        const img = document.createElement('img');
+        img.src = coverImage;
+        img.classList.add('card-img-top');
+        img.alt = book.volumeInfo.title;
+        img.onclick = () => showBookDetails(book);
 
-        // Displaying the authors
-        const authors = document.createElement('p');
-        authors.textContent = `Authors: ${bookInfo.authors ? bookInfo.authors.join(', ') : 'No Authors Available'}`;
-        bookItem.appendChild(authors);
+        const cardBody = document.createElement('div');
+        cardBody.classList.add('card-body');
 
-        // Displaying the description
-        const description = document.createElement('p');
-        description.textContent = `Description: ${bookInfo.description || 'No Description Available'}`;
-        bookItem.appendChild(description);
+        const cardTitle = document.createElement('h5');
+        cardTitle.classList.add('card-title');
+        cardTitle.textContent = book.volumeInfo.title;
 
-        // Displaying the published date
-        const publishedDate = document.createElement('p');
-        publishedDate.textContent = `Published Date: ${bookInfo.publishedDate || 'No Published Date Available'}`;
-        bookItem.appendChild(publishedDate);
-
-        // Displaying the ISBNs
-        if (bookInfo.industryIdentifiers) {
-            const isbnList = document.createElement('p');
-            isbnList.textContent = 'ISBNs: ';
-            bookInfo.industryIdentifiers.forEach(identifier => {
-                isbnList.textContent += `${identifier.type}: ${identifier.identifier} `;
-            });
-            bookItem.appendChild(isbnList);
-        }
-
-        // Displaying the page count
-        const pageCount = document.createElement('p');
-        pageCount.textContent = `Page Count: ${bookInfo.pageCount || 'No Page Count Available'}`;
-        bookItem.appendChild(pageCount);
-
-        // Add to booklist button
-        const addButton = document.createElement('button');
-        addButton.textContent = 'Add to Booklist';
-        addButton.onclick = () => addBookToBooklist(book);
-        bookItem.appendChild(addButton);
-
-        resultDiv.appendChild(bookItem);
+        cardBody.appendChild(cardTitle);
+        card.appendChild(img);
+        card.appendChild(cardBody);
+        bookCard.appendChild(card);
+        bookGrid.appendChild(bookCard);
     });
+
+    resultDiv.appendChild(bookGrid);
 }
 
-function searchSelect(element) {
-    const searchInput = document.getElementById('searchInput');
-    searchInput.placeholder = `Search by ${element.textContent}`;
+function showBookDetails(book) {
+    const bookDetailsBody = document.getElementById('bookDetailsBody');
+    bookDetailsBody.innerHTML = ''; // Clear previous details
+
+    const bookInfo = book.volumeInfo;
+
+    const title = document.createElement('h3');
+    title.textContent = bookInfo.title || 'No Title Available';
+    bookDetailsBody.appendChild(title);
+
+    const authors = document.createElement('p');
+    authors.textContent = `Authors: ${bookInfo.authors ? bookInfo.authors.join(', ') : 'No Authors Available'}`;
+    bookDetailsBody.appendChild(authors);
+
+    const description = document.createElement('p');
+    description.textContent = `Description: ${bookInfo.description || 'No Description Available'}`;
+    bookDetailsBody.appendChild(description);
+
+    const publishedDate = document.createElement('p');
+    publishedDate.textContent = `Published Date: ${bookInfo.publishedDate || 'No Published Date Available'}`;
+    bookDetailsBody.appendChild(publishedDate);
+
+    if (bookInfo.industryIdentifiers) {
+        const isbnList = document.createElement('p');
+        isbnList.textContent = 'ISBNs: ';
+        bookInfo.industryIdentifiers.forEach(identifier => {
+            isbnList.textContent += `${identifier.type}: ${identifier.identifier} `;
+        });
+        bookDetailsBody.appendChild(isbnList);
+    }
+
+    const pageCount = document.createElement('p');
+    pageCount.textContent = `Page Count: ${bookInfo.pageCount || 'No Page Count Available'}`;
+    bookDetailsBody.appendChild(pageCount);
+
+    const modal = new bootstrap.Modal(document.getElementById('bookDetailsModal'));
+    modal.show();
 }
+
+function signOut() {
+    sessionStorage.removeItem('username');
+    window.location.href = 'index.html'; // Redirect to login page or homepage
+}
+
 
 async function addBookToBooklist(book) {
     const username = sessionStorage.getItem('username');

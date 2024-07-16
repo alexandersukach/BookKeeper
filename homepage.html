@@ -23,7 +23,10 @@
     <!-- Load icon library -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <title>API Test</title>
+    <!-- Google Books API -->
+    <script type="text/javascript" src="https://www.google.com/books/jsapi.js"></script>
+
+    <title>Homepage</title>
 </head>
 <body>
     <!-- Background image -->
@@ -54,17 +57,33 @@
     <div class="input-group mb-3 shadow" data-bs-theme="light" id="search-form">
         <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" id="search-select" aria-expanded="false"><i class="bi bi-list"></i></button>
         <ul class="dropdown-menu">
-            <li><button class="dropdown-item" onclick="searchSelect(this)">Title</button></li>
-            <li><button class="dropdown-item" onclick="searchSelect(this)">Author</button></li>
-            <li><button class="dropdown-item" onclick="searchSelect(this)">Genre</button></li>
-            <li><button class="dropdown-item" onclick="searchSelect(this)">ISBN</button></li>
-            <li><button class="dropdown-item" onclick="searchSelect(this)">Publisher</button></li>
+            <li><button class="dropdown-item" onclick="searchSelect(this, 'intitle')">Title</button></li>
+            <li><button class="dropdown-item" onclick="searchSelect(this, 'inauthor')">Author</button></li>
+            <li><button class="dropdown-item" onclick="searchSelect(this, 'subject')">Genre</button></li>
+            <li><button class="dropdown-item" onclick="searchSelect(this, 'isbn')">ISBN</button></li>
+            <li><button class="dropdown-item" onclick="searchSelect(this, 'inpublisher')">Publisher</button></li>
         </ul>
         <input type="text" class="form-control" id="searchInput" aria-label="Text input with dropdown button">
         <button class="btn btn-light" type="button" onclick="searchBooks()"><i class="bi bi-search"></i></button>
     </div>
 
     <div id="search-results"></div>
+
+    <!-- Modal for displaying book details -->
+    <div class="modal fade" id="bookDetailsModal" tabindex="-1" aria-labelledby="bookDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookDetailsModalLabel">Book Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="bookDetailsBody">
+                    <!-- Book details will be populated here -->
+                    <div id="viewerCanvas" style="width: 100%; height: 500px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 <script src="script.js"></script>
