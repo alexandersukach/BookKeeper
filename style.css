@@ -86,6 +86,7 @@ html {
     position: fixed;
     top: 10vh;
     left: 30vw;
+    z-index: 1;
 }
 
 #content-panel {

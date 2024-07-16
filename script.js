@@ -139,6 +139,13 @@ async function searchBooks() {
 function displayBooks(books) {
     const resultDiv = document.getElementById('search-results');
     resultDiv.innerHTML = ''; // Clear previous results
+    resultDiv.style.overflowY = "auto";
+    resultDiv.style.overflowX = "hidden";
+    resultDiv.style.position = "fixed";
+    resultDiv.style.top = "22.5vh";
+    resultDiv.style.left = "20vw";
+    resultDiv.style.width = "65vw";
+    resultDiv.style.height = "70vh";
 
     if (!books || books.length === 0) {
         resultDiv.textContent = 'No books found.';
@@ -147,23 +154,31 @@ function displayBooks(books) {
 
     const bookGrid = document.createElement('div');
     bookGrid.classList.add('row', 'row-cols-1', 'row-cols-md-3', 'g-4');
+    bookGrid.style.position = "relative";
+    bookGrid.style.zIndex = "0";
 
     books.forEach(book => {
         const bookCard = document.createElement('div');
         bookCard.classList.add('col');
+        bookCard.style.position = "relative";
+        bookCard.style.zIndex = "0";
 
         const card = document.createElement('div');
+        card.style.backdropFilter = "blur(5px)";
+        card.style.backgroundColor = "rgba(46, 37, 83, 0.267)";
         card.classList.add('card', 'h-100');
 
         const coverImage = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : 'placeholder.jpg';
         const img = document.createElement('img');
         img.src = coverImage;
+        img.style.height = "594.75px";
         img.classList.add('card-img-top');
         img.alt = book.volumeInfo.title;
         img.onclick = () => showBookDetails(book);
 
         const cardBody = document.createElement('div');
         cardBody.classList.add('card-body');
+        cardBody.style.textAlign = "center";
 
         const cardTitle = document.createElement('h5');
         cardTitle.classList.add('card-title');
@@ -213,6 +228,12 @@ function showBookDetails(book) {
     const pageCount = document.createElement('p');
     pageCount.textContent = `Page Count: ${bookInfo.pageCount || 'No Page Count Available'}`;
     bookDetailsBody.appendChild(pageCount);
+
+    const addToList = document.createElement('button');
+    addToList.textContent = 'Add to your reading list';
+    addToList.className = 'btn btn-primary'; 
+    addToList.onclick = () => addBookToBooklist(book);
+    bookDetailsBody.appendChild(addToList);
 
     const modal = new bootstrap.Modal(document.getElementById('bookDetailsModal'));
     modal.show();
@@ -299,6 +320,22 @@ function displayBookshelf(booklist) {
         resultDiv.appendChild(bookItem);
     });
 }
+
+// Search activation
+
+// Get the input field
+var input = document.getElementById("searchInput");
+
+// Execute a function when the user releases a key on the keyboard
+input.addEventListener("keyup", function(event) {
+  // Number 13 is the "Enter" key on the keyboard
+  if (event.keyCode === 13) {
+    // Cancel the default action, if needed
+    event.preventDefault();
+    // Trigger the button element with a click
+    document.getElementById("searchButton").click();
+  }
+});
 
 function signOut() {
     sessionStorage.removeItem('username');

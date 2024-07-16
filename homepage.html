@@ -56,7 +56,7 @@
 
     <div class="input-group mb-3 shadow" data-bs-theme="light" id="search-form">
         <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" id="search-select" aria-expanded="false"><i class="bi bi-list"></i></button>
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu" id="select-menu">
             <li><button class="dropdown-item" onclick="searchSelect(this, 'intitle')">Title</button></li>
             <li><button class="dropdown-item" onclick="searchSelect(this, 'inauthor')">Author</button></li>
             <li><button class="dropdown-item" onclick="searchSelect(this, 'subject')">Genre</button></li>
@@ -64,7 +64,7 @@
             <li><button class="dropdown-item" onclick="searchSelect(this, 'inpublisher')">Publisher</button></li>
         </ul>
         <input type="text" class="form-control" id="searchInput" aria-label="Text input with dropdown button">
-        <button class="btn btn-light" type="button" onclick="searchBooks()"><i class="bi bi-search"></i></button>
+        <button class="btn btn-light" type="button" id="searchButton" onclick="searchBooks()"><i class="bi bi-search"></i></button>
     </div>
 
     <div id="search-results"></div>
