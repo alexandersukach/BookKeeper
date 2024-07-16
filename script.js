@@ -78,7 +78,6 @@ async function register() {
         document.getElementById('result').textContent = 'Failed to register user. See console for details.';
     }
 }
-
 async function login() {
     const username = document.getElementById('login-username').value;
     const password = document.getElementById('login-password').value;
@@ -133,10 +132,52 @@ function displayBooks(books) {
 
     resultDiv.innerHTML = ''; // Clear previous results
     books.forEach(book => {
+        const bookInfo = book.volumeInfo;
+
         const bookItem = document.createElement('div');
-        bookItem.textContent = book.volumeInfo.title;
         bookItem.classList.add('list-group-item', 'list-group-item-action');
-        bookItem.onclick = () => addBookToBooklist(book);
+
+        // Displaying the title
+        const title = document.createElement('h3');
+        title.textContent = bookInfo.title || 'No Title Available';
+        bookItem.appendChild(title);
+
+        // Displaying the authors
+        const authors = document.createElement('p');
+        authors.textContent = `Authors: ${bookInfo.authors ? bookInfo.authors.join(', ') : 'No Authors Available'}`;
+        bookItem.appendChild(authors);
+
+        // Displaying the description
+        const description = document.createElement('p');
+        description.textContent = `Description: ${bookInfo.description || 'No Description Available'}`;
+        bookItem.appendChild(description);
+
+        // Displaying the published date
+        const publishedDate = document.createElement('p');
+        publishedDate.textContent = `Published Date: ${bookInfo.publishedDate || 'No Published Date Available'}`;
+        bookItem.appendChild(publishedDate);
+
+        // Displaying the ISBNs
+        if (bookInfo.industryIdentifiers) {
+            const isbnList = document.createElement('p');
+            isbnList.textContent = 'ISBNs: ';
+            bookInfo.industryIdentifiers.forEach(identifier => {
+                isbnList.textContent += `${identifier.type}: ${identifier.identifier} `;
+            });
+            bookItem.appendChild(isbnList);
+        }
+
+        // Displaying the page count
+        const pageCount = document.createElement('p');
+        pageCount.textContent = `Page Count: ${bookInfo.pageCount || 'No Page Count Available'}`;
+        bookItem.appendChild(pageCount);
+
+        // Add to booklist button
+        const addButton = document.createElement('button');
+        addButton.textContent = 'Add to Booklist';
+        addButton.onclick = () => addBookToBooklist(book);
+        bookItem.appendChild(addButton);
+
         resultDiv.appendChild(bookItem);
     });
 }
@@ -146,7 +187,7 @@ function searchSelect(element) {
     searchInput.placeholder = `Search by ${element.textContent}`;
 }
 
-async function addBookTobooklist(book) {
+async function addBookToBooklist(book) {
     const username = sessionStorage.getItem('username');
     if (!username) {
         alert('You need to be logged in to add books to your reading list.');
@@ -156,7 +197,17 @@ async function addBookTobooklist(book) {
     try {
         let binData = await getBin();
         const user = binData.record.users.find(user => user.username === username);
-        user.booklist.push(book);
+
+        const bookInfo = {
+            title: book.volumeInfo.title || 'No Title Available',
+            authors: book.volumeInfo.authors || ['No Authors Available'],
+            description: book.volumeInfo.description || 'No Description Available',
+            publishedDate: book.volumeInfo.publishedDate || 'No Published Date Available',
+            industryIdentifiers: book.volumeInfo.industryIdentifiers || [],
+            pageCount: book.volumeInfo.pageCount || 'No Page Count Available'
+        };
+
+        user.booklist.push(bookInfo);
         await updateBin(binData.record);
         console.log('Book added to reading list');
         document.getElementById('result').textContent = 'Book added to reading list';
@@ -179,20 +230,35 @@ async function viewBookshelf() {
         if (user && user.booklist.length > 0) {
             displayBookshelf(user.booklist);
         } else {
-            document.getElementById('result').textContent = 'Your bookshelf is empty.';
+            const resultDiv = document.getElementById('result');
+            if (resultDiv) {
+                resultDiv.textContent = 'Your bookshelf is empty.';
+            } else {
+                console.error('Result element not found in the DOM.');
+            }
         }
     } catch (error) {
         console.error('Failed to fetch bookshelf:', error);
-        document.getElementById('result').textContent = 'Failed to fetch bookshelf. See console for details.';
+        const resultDiv = document.getElementById('result');
+        if (resultDiv) {
+            resultDiv.textContent = 'Failed to fetch bookshelf. See console for details.';
+        } else {
+            console.error('Result element not found in the DOM.');
+        }
     }
 }
 
 function displayBookshelf(booklist) {
     const resultDiv = document.getElementById('result');
+    if (!resultDiv) {
+        console.error('Result element not found in the DOM.');
+        return;
+    }
+
     resultDiv.innerHTML = '<h2>Your Bookshelf</h2>';
     booklist.forEach(book => {
         const bookItem = document.createElement('div');
-        bookItem.textContent = book.volumeInfo.title;
+        bookItem.textContent = book.title; // Assuming book has a title property
         resultDiv.appendChild(bookItem);
     });
 }
