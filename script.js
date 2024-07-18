@@ -231,9 +231,11 @@ function showBookDetails(book) {
 
     const addToList = document.createElement('button');
     addToList.textContent = 'Add to your reading list';
-    addToList.className = 'btn btn-primary'; 
-    addToList.onclick = () => addBookToBooklist(book);
+    addToList.className = 'btn btn-primary';
+    addToList.setAttribute("id", "addToList-button");
     bookDetailsBody.appendChild(addToList);
+    addToList.onclick = () => { addBookToBooklist(book); setTimeout(() => { changeButtonState(addToList); }, 100); };
+    
 
     const modal = new bootstrap.Modal(document.getElementById('bookDetailsModal'));
     modal.show();
@@ -244,6 +246,11 @@ function signOut() {
     window.location.href = 'index.html'; // Redirect to login page or homepage
 }
 
+function changeButtonState(button) {
+    button.className = 'btn btn-success';
+    button.textContent = 'Book Added';
+    button.disabled = true;
+}
 
 async function addBookToBooklist(book) {
     const username = sessionStorage.getItem('username');
@@ -270,6 +277,7 @@ async function addBookToBooklist(book) {
         await updateBin(binData.record);
         console.log('Book added to reading list');
         document.getElementById('result').textContent = 'Book added to reading list';
+
     } catch (error) {
         console.error('Failed to add book to reading list:', error);
         document.getElementById('result').textContent = 'Failed to add book to reading list. See console for details.';
@@ -409,12 +417,38 @@ function showBookShelfDetails(book) {
     const removeFromList = document.createElement('button');
     removeFromList.textContent = `Remove ${bookTitle}`;
     removeFromList.className = 'btn btn-danger'; 
-    //addToList.onclick = () => addBookToBooklist(book);
+    removeFromList.onclick = () => removeBookFromList(book);
     bookShelfDetailsBody.appendChild(removeFromList);
 
     const modal = new bootstrap.Modal(document.getElementById('bookShelfDetailsModal'));
     modal.show();
 }
+
+async function removeBookFromList(book) {
+    const username = sessionStorage.getItem('username');
+    
+    if (!username) {
+        alert('You need to be logged in to add books to your reading list.');
+        return;
+    }
+
+    try {
+        let binData = await getBin();
+        const user = binData.record.users.find(user => user.username === username);
+        const bookIndex = user.booklist.indexOf(book.title);
+
+        user.booklist.splice(bookIndex, 1);
+        await updateBin(binData.record);
+        console.log('Book added to reading list');
+        document.getElementById('result').textContent = 'Book successfully removed.';
+        window.location.href = 'bookshelf.html';
+
+    } catch (error) {
+        console.error('Failed to remove book from book shelf:', error);
+        document.getElementById('result').textContent = 'Failed to remove book from book shelf. See console for details.';
+    }
+}
+
 
 // Search activation
 
