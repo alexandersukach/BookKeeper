@@ -432,14 +432,16 @@ async function removeBookFromList(book) {
         return;
     }
 
+    const bookTitle = book.title;
+
     try {
         let binData = await getBin();
         const user = binData.record.users.find(user => user.username === username);
-        const bookIndex = user.booklist.indexOf(book.title);
-
-        user.booklist.splice(bookIndex, 1);
+        
+        user.booklist = user.booklist.filter(book => book.title !== `${bookTitle}`);
+        
         await updateBin(binData.record);
-        console.log('Book added to reading list');
+        
         document.getElementById('result').textContent = 'Book successfully removed.';
         window.location.href = 'bookshelf.html';
 
