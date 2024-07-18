@@ -262,7 +262,8 @@ async function addBookToBooklist(book) {
             description: book.volumeInfo.description || 'No Description Available',
             publishedDate: book.volumeInfo.publishedDate || 'No Published Date Available',
             industryIdentifiers: book.volumeInfo.industryIdentifiers || [],
-            pageCount: book.volumeInfo.pageCount || 'No Page Count Available'
+            pageCount: book.volumeInfo.pageCount || 'No Page Count Available',
+            image: book.volumeInfo.imageLinks.thumbnail || 'placeholder.jpg'
         };
 
         user.booklist.push(bookInfo);
@@ -314,11 +315,105 @@ function displayBookshelf(booklist) {
     }
 
     resultDiv.innerHTML = '<h2>Your Bookshelf</h2>';
+    resultDiv.style.overflowY = "auto";
+    resultDiv.style.overflowX = "hidden";
+    resultDiv.style.position = "fixed";
+    resultDiv.style.top = "22.5vh";
+    resultDiv.style.left = "20vw";
+    resultDiv.style.width = "65vw";
+    resultDiv.style.height = "70vh";
+
+    const bookGrid = document.createElement('div');
+    bookGrid.classList.add('row', 'row-cols-1', 'row-cols-md-3', 'g-4');
+    bookGrid.style.position = "relative";
+    bookGrid.style.zIndex = "0";
+    
     booklist.forEach(book => {
-        const bookItem = document.createElement('div');
-        bookItem.textContent = book.title; // Assuming book has a title property
-        resultDiv.appendChild(bookItem);
+        const bookImage = book.image;
+
+        const bookCard = document.createElement('div');
+        bookCard.classList.add('col');
+        bookCard.style.position = "relative";
+        bookCard.style.zIndex = "0";
+
+        const card = document.createElement('div');
+        card.style.backdropFilter = "blur(5px)";
+        card.style.backgroundColor = "rgba(46, 37, 83, 0.267)";
+        card.classList.add('card', 'h-100');
+
+        const img = document.createElement('img');
+        img.src = bookImage;
+        img.style.height = "594.75px";
+        img.classList.add('card-img-top');
+        img.alt = book.title;
+        img.onclick = () => showBookShelfDetails(book);
+
+        const cardBody = document.createElement('div');
+        cardBody.classList.add('card-body');
+        cardBody.style.textAlign = "center";
+
+        const cardTitle = document.createElement('h5');
+        cardTitle.classList.add('card-title');
+        cardTitle.textContent = book.title;
+
+        cardBody.appendChild(cardTitle);
+        card.appendChild(img);
+        card.appendChild(cardBody);
+        bookCard.appendChild(card);
+        bookGrid.appendChild(bookCard);
+
+
+        resultDiv.appendChild(bookGrid);
     });
+}
+
+function showBookShelfDetails(book) {
+    const bookShelfDetailsBody = document.getElementById('bookShelfDetailsBody');
+    bookShelfDetailsBody.innerHTML = ''; // Clear previous details
+
+    const bookTitle = book.title;
+    const title = document.createElement('h3');
+    title.textContent = `${bookTitle}`;
+    bookShelfDetailsBody.appendChild(title);
+
+    const bookAuthor = book.authors;
+    const authors = document.createElement('p');
+    authors.textContent = `Authors: ${bookAuthor}`;
+    bookShelfDetailsBody.appendChild(authors);
+
+    const bookDescription = book.description;
+    const description = document.createElement('p');
+    description.textContent = `Description: ${bookDescription}`;
+    bookShelfDetailsBody.appendChild(description);
+
+    const bookPublishedDate = book.publishedDate;
+    const publishedDate = document.createElement('p');
+    publishedDate.textContent = `Published Date: ${bookPublishedDate}`;
+    bookShelfDetailsBody.appendChild(publishedDate);
+
+    const bookIdentifiers = book.industryIdentifiers;
+    if (bookIdentifiers) {
+        const isbnList = document.createElement('p');
+        isbnList.textContent = 'ISBNs: ';
+        bookIdentifiers.forEach(identifier => {
+            isbnList.textContent += `${identifier.type}: ${identifier.identifier} `;
+        });
+        bookShelfDetailsBody.appendChild(isbnList);
+    }
+
+    const bookPages = book.pageCount;
+    const pageCount = document.createElement('p');
+    pageCount.textContent = `Page Count: ${bookPages}`;
+    bookShelfDetailsBody.appendChild(pageCount);
+
+    const removeFromList = document.createElement('button');
+    removeFromList.textContent = `Remove ${bookTitle}`;
+    removeFromList.className = 'btn btn-danger'; 
+    //addToList.onclick = () => addBookToBooklist(book);
+    bookShelfDetailsBody.appendChild(removeFromList);
+
+    const modal = new bootstrap.Modal(document.getElementById('bookShelfDetailsModal'));
+    modal.show();
 }
 
 // Search activation

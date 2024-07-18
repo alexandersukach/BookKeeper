@@ -32,7 +32,7 @@
     <!-- A grey horizontal navbar that becomes vertical on small screens -->
     <nav class="navbar navbar-expand-sm fixed-top mask-custom">
         <div class="container-fluid">
-            <a class="navbar-brand" href='index.html'>BookKeeper</a>
+            <a class="navbar-brand" href='homepage.html'>BookKeeper</a>
         </div>
 
         <!-- Links -->
@@ -52,6 +52,22 @@
     </nav>
 
     <div id="result" class="container mt-5"></div>
+
+    <!-- Modal for displaying book details -->
+    <div class="modal fade" id="bookShelfDetailsModal" tabindex="-1" aria-labelledby="bookShelfDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookShelfDetailsModalLabel">Book Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="bookShelfDetailsBody">
+                    <!-- Book details will be populated here -->
+                    <div id="viewerCanvas" style="width: 100%; height: 500px"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 <script src="script.js"></script>
