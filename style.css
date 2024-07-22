@@ -29,8 +29,8 @@ html {
 #welcome {
     font: 'Poppins';
     position: fixed;
-    top: 40%;
-    left: 50%;
+    top: 15vh;
+    left: 50vw;
     transform: translate(-10%, -10%);
 }
 
@@ -79,6 +79,29 @@ html {
 #signup-signup {
     backdrop-filter: blur(5px);
     background-color: rgba(62, 129, 142, 0.267);
+}
+
+#carousel-container {
+    position: fixed;
+    top: 40vh;
+    left: 39vw;
+    height: 45vh;
+    width: 20vw;
+    align-content: space-around;
+}
+
+.carousel-caption {
+    border-radius: 5px;
+    height: auto;
+}
+
+.carousel-caption p {
+    color: #f8f9fa;
+    padding-bottom: 5px;
+}
+
+.carousel-caption h5 {
+    color: #f8f9fa;
 }
 
 #search-form {
