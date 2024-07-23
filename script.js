@@ -171,7 +171,7 @@ function displayBooks(books) {
         const coverImage = book.volumeInfo.imageLinks ? book.volumeInfo.imageLinks.thumbnail : 'placeholder.jpg';
         const img = document.createElement('img');
         img.src = coverImage;
-        img.style.height = "594.75px";
+        img.style.height = "400px";
         img.classList.add('card-img-top');
         img.alt = book.volumeInfo.title;
         img.onclick = () => showBookDetails(book);
@@ -299,7 +299,10 @@ async function viewBookshelf() {
         } else {
             const resultDiv = document.getElementById('result');
             if (resultDiv) {
-                resultDiv.textContent = 'Your bookshelf is empty.';
+                const emptyDisplay = document.createElement('div');
+                emptyDisplay.setAttribute("id", "emptyDisplay");
+                emptyDisplay.innerHTML = `<h3>Your bookshelf is empty.</h3>`;
+                resultDiv.appendChild(emptyDisplay);
             } else {
                 console.error('Result element not found in the DOM.');
             }
@@ -347,11 +350,11 @@ function displayBookshelf(booklist) {
         const card = document.createElement('div');
         card.style.backdropFilter = "blur(5px)";
         card.style.backgroundColor = "rgba(46, 37, 83, 0.267)";
-        card.classList.add('card', 'h-100');
+        card.classList.add('card', 'h-50');
 
         const img = document.createElement('img');
         img.src = bookImage;
-        img.style.height = "594.75px";
+        img.style.height = "400px";
         img.classList.add('card-img-top');
         img.alt = book.title;
         img.onclick = () => showBookShelfDetails(book);
@@ -450,6 +453,7 @@ async function removeBookFromList(book) {
         document.getElementById('result').textContent = 'Failed to remove book from book shelf. See console for details.';
     }
 }
+
 
 
 // Search activation

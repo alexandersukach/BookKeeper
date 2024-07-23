@@ -29,14 +29,14 @@ html {
 #welcome {
     font: 'Poppins';
     position: fixed;
-    top: 15vh;
+    top: 10vh;
     left: 50vw;
     transform: translate(-10%, -10%);
 }
 
 #welcome span {
     position: relative;
-    right: 3.5vw;
+    right: 8vw;
     font-size: 5em;
 }
 
@@ -84,9 +84,9 @@ html {
 #carousel-container {
     position: fixed;
     top: 40vh;
-    left: 39vw;
-    height: 45vh;
-    width: 20vw;
+    left: 30vw;
+    height: 40vh;
+    width: 33vw;
     align-content: space-around;
 }
 
@@ -116,4 +116,10 @@ html {
     position: fixed;
     top: 20vh;
     left: 30vw;
+}
+
+#emptyDisplay {
+    position: fixed;
+    top: 15vh;
+    left: 40vw;
 }
