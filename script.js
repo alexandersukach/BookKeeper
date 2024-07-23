@@ -194,7 +194,7 @@ function displayBooks(books) {
     resultDiv.appendChild(bookGrid);
 }
 
-function showBookDetails(book) {
+async function showBookDetails(book) {
     const bookDetailsBody = document.getElementById('bookDetailsBody');
     bookDetailsBody.innerHTML = ''; // Clear previous details
 
@@ -216,11 +216,15 @@ function showBookDetails(book) {
     publishedDate.textContent = `Published Date: ${bookInfo.publishedDate || 'No Published Date Available'}`;
     bookDetailsBody.appendChild(publishedDate);
 
+    let bookIsbn = null;
     if (bookInfo.industryIdentifiers) {
         const isbnList = document.createElement('p');
         isbnList.textContent = 'ISBNs: ';
         bookInfo.industryIdentifiers.forEach(identifier => {
             isbnList.textContent += `${identifier.type}: ${identifier.identifier} `;
+            if (identifier.type === 'ISBN_13' || identifier.type === 'ISBN_10') {
+                bookIsbn = identifier.identifier;
+            }
         });
         bookDetailsBody.appendChild(isbnList);
     }
@@ -230,20 +234,49 @@ function showBookDetails(book) {
     bookDetailsBody.appendChild(pageCount);
 
     const addToList = document.createElement('button');
-    addToList.textContent = 'Add to your reading list';
     addToList.className = 'btn btn-primary';
     addToList.setAttribute("id", "addToList-button");
-    bookDetailsBody.appendChild(addToList);
-    addToList.onclick = () => { addBookToBooklist(book); setTimeout(() => { changeButtonState(addToList); }, 100); };
-    
+
+    const username = sessionStorage.getItem('username');
+
+    if (!username) {
+        alert('You need to be logged in to view book details.');
+        return;
+    }
+
+    try {
+        let binData = await getBin();
+        const user = binData.record.users.find(user => user.username === username);
+
+        console.log("User booklist:", user.booklist);
+        console.log("Current book ISBN:", bookIsbn);
+
+        const bookExists = user.booklist.some(userBook => {
+            return userBook.industryIdentifiers.some(identifier => {
+                const userBookIsbn = identifier.identifier;
+                console.log("Comparing with user book ISBN:", userBookIsbn);
+                return userBookIsbn === bookIsbn;
+            });
+        });
+
+        if (bookExists) {
+            addToList.textContent = 'Book already in your booklist';
+            addToList.className = 'btn btn-secondary';
+            addToList.disabled = true;
+        } else {
+            addToList.textContent = 'Add to your reading list';
+            addToList.onclick = () => { 
+                addBookToBooklist(book); 
+                setTimeout(() => { changeButtonState(addToList); }, 100); 
+            };
+        }
+        bookDetailsBody.appendChild(addToList);
+    } catch (error) {
+        console.error('Failed to check if book is in bookshelf:', error);
+    }
 
     const modal = new bootstrap.Modal(document.getElementById('bookDetailsModal'));
     modal.show();
-}
-
-function signOut() {
-    sessionStorage.removeItem('username');
-    window.location.href = 'index.html'; // Redirect to login page or homepage
 }
 
 function changeButtonState(button) {
@@ -454,7 +487,35 @@ async function removeBookFromList(book) {
     }
 }
 
+// async function getRecommendedBooks() {
+//     const username = sessionStorage.getItem('username');
 
+//     if (!username) {
+//         alert('You need to be logged in to view your bookshelf.');
+//         return;
+//     }
+
+//     try {
+//     let binData = await getBin();
+//     const user = binData.record.users.find(user => user.username === username);
+    
+//     if (user && user.booklist.length > 0) {
+//         displayBookshelf(user.booklist);
+//     } else {
+//         const resultDiv = document.getElementById('result');
+//         if (resultDiv) {
+            
+//         } else {
+//             console.error('Result element not found in the DOM.');
+//         }
+//     }
+//     }
+//     catch (error) {
+//         alert('You need to be logged in to add books to your reading list.');
+//         return;
+//     }
+
+// }
 
 // Search activation
 
