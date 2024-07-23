@@ -121,15 +121,20 @@ async function searchBooks() {
         try {
             const response = await fetch(apiURL);
             const data = await response.json();
-            const filteredBooks = data.items.filter(book => {
-                if (searchParameter === 'inauthor') {
-                    return book.volumeInfo.authors && book.volumeInfo.authors.some(author => author.toLowerCase().includes(searchInput.toLowerCase()));
-                }
-                return true;
-            });
-            displayBooks(filteredBooks);
+            if (data.items && data.items.length > 0) {
+                const filteredBooks = data.items.filter(book => {
+                    if (searchParameter === 'inauthor') {
+                        return book.volumeInfo.authors && book.volumeInfo.authors.some(author => author.toLowerCase().includes(searchInput.toLowerCase()));
+                    }
+                    return true;
+                });
+                displayBooks(filteredBooks);
+            } else {
+                displayBooks([]);
+            }
         } catch (error) {
             console.error('Failed to fetch books:', error);
+            displayBooks([]); // Show no books found message in case of error
         }
     } else {
         alert('Please enter a search keyword.');
@@ -468,13 +473,16 @@ async function removeBookFromList(book) {
         return;
     }
 
-    const bookTitle = book.title;
+    const bookIsbn = book.industryIdentifiers.find(identifier => identifier.type === 'ISBN_13' || identifier.type === 'ISBN_10').identifier;
 
     try {
         let binData = await getBin();
         const user = binData.record.users.find(user => user.username === username);
-        
-        user.booklist = user.booklist.filter(book => book.title !== `${bookTitle}`);
+
+        user.booklist = user.booklist.filter(userBook => {
+            const userBookIsbn = userBook.industryIdentifiers.find(identifier => identifier.type === 'ISBN_13' || identifier.type === 'ISBN_10').identifier;
+            return userBookIsbn !== bookIsbn;
+        });
         
         await updateBin(binData.record);
         
@@ -482,40 +490,44 @@ async function removeBookFromList(book) {
         window.location.href = 'bookshelf.html';
 
     } catch (error) {
-        console.error('Failed to remove book from book shelf:', error);
-        document.getElementById('result').textContent = 'Failed to remove book from book shelf. See console for details.';
+        console.error('Failed to remove book from bookshelf:', error);
+        document.getElementById('result').textContent = 'Failed to remove book from bookshelf. See console for details.';
     }
 }
 
-// async function getRecommendedBooks() {
-//     const username = sessionStorage.getItem('username');
+async function getRecommendedBooks() {
+    const username = sessionStorage.getItem('username');
 
-//     if (!username) {
-//         alert('You need to be logged in to view your bookshelf.');
-//         return;
-//     }
+    if (!username) {
+        alert('You need to be logged in to view your bookshelf.');
+        return;
+    }
 
-//     try {
-//     let binData = await getBin();
-//     const user = binData.record.users.find(user => user.username === username);
+    try {
+    let binData = await getBin();
+    const user = binData.record.users.find(user => user.username === username);
     
-//     if (user && user.booklist.length > 0) {
-//         displayBookshelf(user.booklist);
-//     } else {
-//         const resultDiv = document.getElementById('result');
-//         if (resultDiv) {
-            
-//         } else {
-//             console.error('Result element not found in the DOM.');
-//         }
-//     }
-//     }
-//     catch (error) {
-//         alert('You need to be logged in to add books to your reading list.');
-//         return;
-//     }
+    if (user && user.booklist.length > 0) {
+        
+    } else {
+        const resultDiv = document.getElementById('search-results');
+        resultDiv.innerHTML = ''; // Clear previous results
+        resultDiv.style.overflowY = "auto";
+        resultDiv.style.overflowX = "hidden";
+        resultDiv.style.position = "fixed";
+        resultDiv.style.top = "22.5vh";
+        resultDiv.style.left = "20vw";
+        resultDiv.style.width = "65vw";
+        resultDiv.style.height = "70vh";
+        resultDiv.innerHTML = "This is a test.";
+    }
+    }
+    catch (error) {
+        alert('An error has occurred.');
+        return;
+    }
 
-// }
+}
 
 // Search activation
 

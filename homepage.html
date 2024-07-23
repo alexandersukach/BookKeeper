@@ -28,7 +28,7 @@
 
     <title>Homepage</title>
 </head>
-<body>
+<body onload="getRecommendedBooks()">
     <!-- Background image -->
     <div class="bg-image"></div>
     <!-- Background image -->
@@ -68,7 +68,7 @@
     </div>
 
     <div id="search-results"></div>
-
+    
     <!-- Modal for displaying book details -->
     <div class="modal fade" id="bookDetailsModal" tabindex="-1" aria-labelledby="bookDetailsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
