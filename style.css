@@ -104,6 +104,18 @@ html {
     color: #f8f9fa;
 }
 
+#recommendations {
+    position: fixed;
+    margin-bottom: 3vh;
+    left: 40vw;
+    top: 15vh;
+}
+
+#recommendations span {
+    font-weight: bold;
+    font-size: 2em;
+}
+
 #search-form {
     width: 40vw;
     position: fixed;

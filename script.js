@@ -93,7 +93,6 @@ async function login() {
 
         // User authenticated successfully
         sessionStorage.setItem('username', username);
-        alert('Successfully logged in');
         window.location.href = 'homepage.html';
     } catch (error) {
         console.error('Failed to login:', error);
@@ -113,10 +112,12 @@ function searchSelect(element, parameter) {
 async function searchBooks() {
     const apiKey = 'AIzaSyDEEzOr0fGC0CycWr0oZ_LkzYL62ZPzu9o';
     const searchInput = document.getElementById('searchInput').value;
+    const recDiv = document.getElementById('recommendations');
+    recDiv.style.display = "none";
 
     if (searchInput.trim() !== '') {
         const query = `${searchParameter}:${searchInput.trim()}`;
-        const apiURL = `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${apiKey}`;
+        const apiURL = `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${apiKey}&maxResults=40`;
         
         try {
             const response = await fetch(apiURL);
@@ -143,6 +144,7 @@ async function searchBooks() {
 
 function displayBooks(books) {
     const resultDiv = document.getElementById('search-results');
+
     resultDiv.innerHTML = ''; // Clear previous results
     resultDiv.style.overflowY = "auto";
     resultDiv.style.overflowX = "hidden";
@@ -497,6 +499,10 @@ async function removeBookFromList(book) {
 
 async function getRecommendedBooks() {
     const username = sessionStorage.getItem('username');
+    const apiKey = 'AIzaSyDEEzOr0fGC0CycWr0oZ_LkzYL62ZPzu9o';
+    const recDiv = document.getElementById('recommendations');
+    var randomRecs = document.createElement("span");
+   
 
     if (!username) {
         alert('You need to be logged in to view your bookshelf.');
@@ -508,25 +514,76 @@ async function getRecommendedBooks() {
     const user = binData.record.users.find(user => user.username === username);
     
     if (user && user.booklist.length > 0) {
+
+        const randomBookNumber = Math.floor(Math.random() * user.booklist.length);
+        console.log(randomBookNumber);
+        const randomBook = user.booklist[randomBookNumber];
+        const randomAuthor = randomBook.authors[0];
+        const randomStart = Math.floor(Math.random() * randomBookNumber);
+
+        const search = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${randomAuthor}&key=${apiKey}&startIndex=${randomStart}&maxResults=5`;
         
+        try {
+            const randomBooks = await fetch(search);
+            const randomBooksData = await randomBooks.json();
+            if (randomBooksData.items && randomBooksData.items.length > 0) {
+                const filteredRandom = randomBooksData.items.filter(book => {
+                    if (searchParameter === 'inauthor') {
+                        return book.volumeInfo.authors && book.volumeInfo.authors.some(author => author.toLowerCase().includes(searchInput.toLowerCase()));
+                    }
+                    return true;
+                });
+                displayBooks(filteredRandom);
+
+            } else {
+                displayBooks([]);
+            }
+        } catch (error) {
+            console.error('Failed to fetch books:', error);
+            displayBooks([]); // Show no books found message in case of error
+        }
     } else {
-        const resultDiv = document.getElementById('search-results');
-        resultDiv.innerHTML = ''; // Clear previous results
-        resultDiv.style.overflowY = "auto";
-        resultDiv.style.overflowX = "hidden";
-        resultDiv.style.position = "fixed";
-        resultDiv.style.top = "22.5vh";
-        resultDiv.style.left = "20vw";
-        resultDiv.style.width = "65vw";
-        resultDiv.style.height = "70vh";
-        resultDiv.innerHTML = "This is a test.";
+
+        
+        
+        const genres = ['Literary Fiction', 'Contemporary Fiction', 'Romance', 'Historical Fiction', 'Thriller', 'Horror', 'Mystery', 'Action & Adventure', 'Science Fiction', 'Fantasy', 'Paranormal', 'Western', 'Dystopian', 'LGBTQ+', 'Graphic Novel', 'Biography', 'Travel', 'True Crime', 'Cookbooks', 'Religion', 'Philosophy', 'Art', 'Photography', 'Humor', 'Poetry', 'Travel'];
+        const randomPull = Math.floor(Math.random() * genres.length);
+        const searchRandom = genres[randomPull];
+        const randomStart = Math.floor(Math.random() * 101);
+
+        const search = `https://www.googleapis.com/books/v1/volumes?q=+subject:${searchRandom}&key=${apiKey}&maxResults=5&startIndex=${randomStart}`;
+        
+        try {
+            const randomBooks = await fetch(search);
+            const randomBooksData = await randomBooks.json();
+            if (randomBooksData.items && randomBooksData.items.length > 0) {
+                const filteredRandom = randomBooksData.items.filter(book => {
+                    if (searchParameter === 'inauthor') {
+                        return book.volumeInfo.authors && book.volumeInfo.authors.some(author => author.toLowerCase().includes(searchInput.toLowerCase()));
+                    }
+                    return true;
+                });
+                displayBooks(filteredRandom);
+
+            } else {
+                displayBooks([]);
+            }
+            
+        } catch (error) {
+            console.error('Failed to fetch books:', error);
+            displayBooks([]); // Show no books found message in case of error
+        }
     }
+
+        
     }
     catch (error) {
         alert('An error has occurred.');
         return;
     }
 
+    randomRecs.innerHTML = "Try One of These Recommendations:";
+    recDiv.appendChild(randomRecs);
 }
 
 // Search activation
