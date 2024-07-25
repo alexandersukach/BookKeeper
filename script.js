@@ -519,9 +519,9 @@ async function getRecommendedBooks() {
         console.log(randomBookNumber);
         const randomBook = user.booklist[randomBookNumber];
         const randomAuthor = randomBook.authors[0];
-        const randomStart = Math.floor(Math.random() * randomBookNumber);
+        const randomStart = Math.floor(Math.random() * 51);
 
-        const search = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${randomAuthor}&key=${apiKey}&startIndex=${randomStart}&maxResults=5`;
+        const search = `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${randomAuthor}&key=${apiKey}&startIndex=${randomStart}&maxResults=6`;
         
         try {
             const randomBooks = await fetch(search);
@@ -550,8 +550,7 @@ async function getRecommendedBooks() {
         const randomPull = Math.floor(Math.random() * genres.length);
         const searchRandom = genres[randomPull];
         const randomStart = Math.floor(Math.random() * 101);
-
-        const search = `https://www.googleapis.com/books/v1/volumes?q=+subject:${searchRandom}&key=${apiKey}&maxResults=5&startIndex=${randomStart}`;
+        const search = `https://www.googleapis.com/books/v1/volumes?q=+subject:${searchRandom}&key=${apiKey}&maxResults=6&startIndex=${randomStart}`;
         
         try {
             const randomBooks = await fetch(search);
